@@ -15,6 +15,8 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		FD2F62D73005E143009042BF /* Models */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Models; sourceTree = "<group>"; };
+		FD2F62DA3005E148009042BF /* Networking */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Networking; sourceTree = "<group>"; };
 		FD961CA73005CD0C000B5D1F /* App */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = App; sourceTree = "<group>"; };
 		FD961CB23005CDB1000B5D1F /* Feature */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Feature; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -37,6 +39,8 @@
 				FD961CA73005CD0C000B5D1F /* App */,
 				0A00000D0000000000000001 /* docs */,
 				FD961CB23005CDB1000B5D1F /* Feature */,
+				FD2F62D73005E143009042BF /* Models */,
+				FD2F62DA3005E148009042BF /* Networking */,
 				0A00000F0000000000000001 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -75,6 +79,8 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				FD2F62D73005E143009042BF /* Models */,
+				FD2F62DA3005E148009042BF /* Networking */,
 				FD961CA73005CD0C000B5D1F /* App */,
 				FD961CB23005CDB1000B5D1F /* Feature */,
 			);
