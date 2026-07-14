@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 70;
+	objectVersion = 73;
 	objects = {
 
 /* Begin PBXFileReference section */
@@ -14,11 +14,31 @@
 		0A0000090000000000000001 /* API_RESEARCH_TO_IMPLEMENTATION_REPORT.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = API_RESEARCH_TO_IMPLEMENTATION_REPORT.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		FD2F62E33005E237009042BF /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				UserDetail/UserDetailViewModel.swift,
+			);
+			target = 0A0000110000000000000001 /* kadai */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		FD2F62E43005E23E009042BF /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 0A0000140000000000000001 /* Resources */;
+			membershipExceptions = (
+				UserDetail/UserDetailViewModel.swift,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		FD2F62D73005E143009042BF /* Models */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Models; sourceTree = "<group>"; };
 		FD2F62DA3005E148009042BF /* Networking */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Networking; sourceTree = "<group>"; };
 		FD961CA73005CD0C000B5D1F /* App */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = App; sourceTree = "<group>"; };
-		FD961CB23005CDB1000B5D1F /* Feature */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Feature; sourceTree = "<group>"; };
+		FD961CB23005CDB1000B5D1F /* Feature */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (FD2F62E33005E237009042BF /* PBXFileSystemSynchronizedBuildFileExceptionSet */, FD2F62E43005E23E009042BF /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Feature; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,7 +125,6 @@
 				};
 			};
 			buildConfigurationList = 0A0000160000000000000001 /* Build configuration list for PBXProject "kadai" */;
-			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -113,6 +132,7 @@
 				Base,
 			);
 			mainGroup = 0A00000B0000000000000001;
+			preferredProjectObjectVersion = 56;
 			productRefGroup = 0A00000F0000000000000001 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
