@@ -9,6 +9,7 @@ import Foundation
 
 /*
  0件とerrorを分けるのがミソ
+ enumってのは複数選択肢のうちちょうど１つを表現するのに便利
  */
 enum SearchViewState {
     case idle
@@ -76,3 +77,8 @@ final class SearchViewModel: ObservableObject {
         }
     }
 }
+/*
+ [idle] ──検索開始──> [loading] ──┬─ 成功・結果あり ─> [loaded]
+           ↑                              ├─ 成功・0件 ─────> [empty]
+        空入力                            └─ 通信失敗 ───────> [error(理由)]
+ */
