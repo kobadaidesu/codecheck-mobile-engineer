@@ -9,8 +9,12 @@ import Foundation
 
 protocol GitHubAPIClientProtocol {
     func searchUsers(query: String) async throws -> [UserSummary]
+    func fetchUser(login: String) async throws -> UserDetail
 }
 
+/*
+LocalizedErrorはユーザーに見せる日本語メッセージのために書いてる
+*/
 enum GitHubAPIError: LocalizedError {
     case invalidURL
     case invalidResponse
@@ -36,6 +40,9 @@ enum GitHubAPIError: LocalizedError {
 
 struct GitHubAPIClient: GitHubAPIClientProtocol {
     func searchUsers(query: String) async throws -> [UserSummary] {
+        /*
+         URLComponents自体はstruct　で中身にURLのパーツを持ってるので色々組み立てて.urlでURL?を返す計算property
+         */
         var components = URLComponents(
             string: "https://api.github.com/search/users"
         )
@@ -45,6 +52,64 @@ struct GitHubAPIClient: GitHubAPIClientProtocol {
         ]
 
         guard let url = components?.url else {
+            throw GitHubAPIError.invalidURL
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        /*
+         • https://docs.github.com/en/rest/using-the-rest-api/getting-started-with-the-rest-api
+            にUser-Agent必須って書いてある
+            今回だとUser-Agent: GitHubUserSearchAppッテ送られる
+            Acceptは返信の形式の希望 JSONで返して JSONDecoder().decode()で壊れるリスクがあるから形式を固定してる
+         */
+        request.setValue(
+            "application/vnd.github+json",
+            forHTTPHeaderField: "Accept"
+        )
+        request.setValue(
+            "GitHubUserSearchApp",
+            forHTTPHeaderField: "User-Agent"
+        )
+        /*
+         URLSessionの仕様で２つの返り値がくる
+         dataに中身の本文(body)が入る, responseはstatus codeやheader などがいろいろはいってる
+         URLResponseという汎用的な型
+         */
+        let (data, response) = try await URLSession.shared.data(
+            for: request
+        )
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw GitHubAPIError.invalidResponse
+        }
+
+        switch httpResponse.statusCode {
+        case 200..<300:
+            let searchResponse = try JSONDecoder().decode(
+                UserSearchResponse.self,
+                from: data
+            )
+
+            return searchResponse.items
+
+        case 403, 429:
+            throw GitHubAPIError.requestLimited
+
+        default:
+            throw GitHubAPIError.httpStatus(
+                httpResponse.statusCode
+            )
+        }
+    }
+
+    func fetchUser(login: String) async throws -> UserDetail {
+        guard let encodedLogin = login.addingPercentEncoding(
+            withAllowedCharacters: .urlPathAllowed
+        ),
+        let url = URL(
+            string: "https://api.github.com/users/\(encodedLogin)"
+        ) else {
             throw GitHubAPIError.invalidURL
         }
 
@@ -69,12 +134,10 @@ struct GitHubAPIClient: GitHubAPIClientProtocol {
 
         switch httpResponse.statusCode {
         case 200..<300:
-            let searchResponse = try JSONDecoder().decode(
-                UserSearchResponse.self,
+            return try JSONDecoder().decode(
+                UserDetail.self,
                 from: data
             )
-
-            return searchResponse.items
 
         case 403, 429:
             throw GitHubAPIError.requestLimited
