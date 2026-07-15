@@ -83,35 +83,39 @@ struct SearchView: View {
 
     private var userList: some View {
         List(viewModel.users) { user in
-            HStack(spacing: 12) {
-                AsyncImage(url: user.avatarURL) { phase in
-                    switch phase {
-                    case .empty:
-                        ProgressView()
-                            .frame(width: 48, height: 48)
+            NavigationLink {
+                UserDetailView(login: user.login)
+            } label: {
+                HStack(spacing: 12) {
+                    AsyncImage(url: user.avatarURL) { phase in
+                        switch phase {
+                        case .empty:
+                            ProgressView()
+                                .frame(width: 48, height: 48)
 
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 48, height: 48)
-                            .clipShape(Circle())
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 48, height: 48)
+                                .clipShape(Circle())
 
-                    case .failure:
-                        Image(systemName: "person.crop.circle")
-                            .resizable()
-                            .frame(width: 48, height: 48)
-                            .foregroundStyle(.secondary)
+                        case .failure:
+                            Image(systemName: "person.crop.circle")
+                                .resizable()
+                                .frame(width: 48, height: 48)
+                                .foregroundStyle(.secondary)
 
-                    @unknown default:
-                        EmptyView()
+                        @unknown default:
+                            EmptyView()
+                        }
                     }
-                }
 
-                Text(user.login)
-                    .font(.headline)
+                    Text(user.login)
+                        .font(.headline)
+                }
+                .padding(.vertical, 4)
             }
-            .padding(.vertical, 4)
         }
         .listStyle(.plain)
     }

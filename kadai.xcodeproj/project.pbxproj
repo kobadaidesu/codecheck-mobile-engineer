@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 73;
+	objectVersion = 74;
 	objects = {
 
 /* Begin PBXFileReference section */
@@ -31,6 +31,11 @@
 			membershipExceptions = (
 				UserDetail/UserDetailViewModel.swift,
 			);
+			platformFiltersByRelativePath = {
+				UserDetail/UserDetailViewModel.swift = (
+					ios,
+				);
+			};
 		};
 /* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 
@@ -38,7 +43,7 @@
 		FD2F62D73005E143009042BF /* Models */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Models; sourceTree = "<group>"; };
 		FD2F62DA3005E148009042BF /* Networking */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Networking; sourceTree = "<group>"; };
 		FD961CA73005CD0C000B5D1F /* App */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = App; sourceTree = "<group>"; };
-		FD961CB23005CDB1000B5D1F /* Feature */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (FD2F62E33005E237009042BF /* PBXFileSystemSynchronizedBuildFileExceptionSet */, FD2F62E43005E23E009042BF /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Feature; sourceTree = "<group>"; };
+		FD961CB23005CDB1000B5D1F /* Feature */ = {isa = PBXFileSystemSynchronizedRootGroup;  explicitFileTypes = {}; explicitFolders = (); path = Feature; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
