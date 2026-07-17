@@ -72,7 +72,7 @@ struct SearchView: View {
                 message: "別のキーワードで検索してください。"
             )
 
-        case .error(let message):
+        case let .error(message):
             messageView(
                 systemImage: "exclamationmark.triangle",
                 title: "検索に失敗しました",
@@ -93,7 +93,7 @@ struct SearchView: View {
                             ProgressView()
                                 .frame(width: 48, height: 48)
 
-                        case .success(let image):
+                        case let .success(image):
                             image
                                 .resizable()
                                 .scaledToFill()
