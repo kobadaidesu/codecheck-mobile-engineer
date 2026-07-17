@@ -9,7 +9,6 @@ import SwiftUI
 
 struct UserDetailView: View {
     @StateObject private var viewModel: UserDetailViewModel
-    
 
     init(login: String) {
         _viewModel = StateObject(
@@ -45,7 +44,7 @@ struct UserDetailView: View {
 
                     Button("再試行") {
                         Task {
-                            await viewModel.fetchUser()
+                            await viewModel.load()
                         }
                     }
                 }
@@ -55,7 +54,7 @@ struct UserDetailView: View {
         .navigationTitle(viewModel.user?.login ?? "ユーザー詳細")
         .navigationBarTitleDisplayMode(.inline)
         .task {
-            await viewModel.fetchUser()
+            await viewModel.load()
         }
     }
 
@@ -89,6 +88,15 @@ struct UserDetailView: View {
                     statView(title: "Following", value: user.following)
                     statView(title: "Repositories", value: user.publicRepos)
                 }
+
+                Divider()
+
+                Text("公開リポジトリ")
+                    .font(.title2)
+                    .bold()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                repositoryContent
             }
             .padding()
         }
@@ -103,5 +111,72 @@ struct UserDetailView: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
+    }
+
+    @ViewBuilder
+    private var repositoryContent: some View {
+        if viewModel.isLoadingRepositories {
+            ProgressView("リポジトリを読み込み中です…")
+        } else if let message = viewModel.repositoryErrorMessage {
+            VStack(spacing: 8) {
+                Text("リポジトリの取得に失敗しました")
+                    .font(.headline)
+
+                Text(message)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Button("再試行") {
+                    Task {
+                        await viewModel.fetchRepositories()
+                    }
+                }
+            }
+        } else if viewModel.repositories.isEmpty {
+            Text("公開リポジトリはありません")
+                .foregroundStyle(.secondary)
+        } else {
+            LazyVStack(spacing: 12) {
+                ForEach(viewModel.repositories) { repository in
+                    repositoryRow(repository)
+                }
+            }
+        }
+    }
+
+    private func repositoryRow(
+        _ repository: Repository
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(repository.name)
+                .font(.headline)
+
+            if let description = repository.description,
+               !description.isEmpty {
+                Text(description)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            HStack {
+                if let language = repository.language {
+                    Label(
+                        language,
+                        systemImage: "chevron.left.forwardslash.chevron.right"
+                    )
+                }
+
+                Label(
+                    "\(repository.stargazersCount)",
+                    systemImage: "star"
+                )
+            }
+            .font(.caption)
+            .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(.thinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }

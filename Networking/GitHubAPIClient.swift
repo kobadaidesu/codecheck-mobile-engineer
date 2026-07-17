@@ -10,6 +10,7 @@ import Foundation
 protocol GitHubAPIClientProtocol {
     func searchUsers(query: String) async throws -> [UserSummary]
     func fetchUser(login: String) async throws -> UserDetail
+    func fetchRepositories(login: String) async throws -> [Repository]
 }
 
 /*
@@ -136,6 +137,60 @@ struct GitHubAPIClient: GitHubAPIClientProtocol {
         case 200..<300:
             return try JSONDecoder().decode(
                 UserDetail.self,
+                from: data
+            )
+
+        case 403, 429:
+            throw GitHubAPIError.requestLimited
+
+        default:
+            throw GitHubAPIError.httpStatus(
+                httpResponse.statusCode
+            )
+        }
+    }
+
+    func fetchRepositories(login: String) async throws -> [Repository] {
+        guard let encodedLogin = login.addingPercentEncoding(
+            withAllowedCharacters: .urlPathAllowed
+        ) else {
+            throw GitHubAPIError.invalidURL
+        }
+
+        var components = URLComponents(
+            string: "https://api.github.com/users/\(encodedLogin)/repos"
+        )
+
+        components?.queryItems = [
+            URLQueryItem(name: "sort", value: "updated"),
+            URLQueryItem(name: "per_page", value: "100")
+        ]
+
+        guard let url = components?.url else {
+            throw GitHubAPIError.invalidURL
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue(
+            "application/vnd.github+json",
+            forHTTPHeaderField: "Accept"
+        )
+        request.setValue(
+            "GitHubUserSearchApp",
+            forHTTPHeaderField: "User-Agent"
+        )
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw GitHubAPIError.invalidResponse
+        }
+
+        switch httpResponse.statusCode {
+        case 200..<300:
+            return try JSONDecoder().decode(
+                [Repository].self,
                 from: data
             )
 

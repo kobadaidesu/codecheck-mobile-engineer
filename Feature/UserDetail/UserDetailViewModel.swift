@@ -20,6 +20,12 @@ final class UserDetailViewModel: ObservableObject {
      */
     @Published private(set) var user: UserDetail?
     @Published private(set) var state: UserDetailViewState = .loading
+    /*
+     repository property
+     */
+    @Published private(set) var repositories: [Repository] = []
+    @Published private(set) var repositoryErrorMessage: String?
+    @Published private(set) var isLoadingRepositories = false
 
     private let login: String
     private let apiClient: any GitHubAPIClientProtocol
@@ -41,5 +47,32 @@ final class UserDetailViewModel: ObservableObject {
         } catch {
             state = .error(error.localizedDescription)
         }
+    }
+
+    func fetchRepositories() async {
+        isLoadingRepositories = true
+        repositoryErrorMessage = nil
+
+        defer {
+            isLoadingRepositories = false
+        }
+
+        do {
+            repositories = try await apiClient.fetchRepositories(
+                login: login
+            )
+        } catch {
+            repositoryErrorMessage = error.localizedDescription
+        }
+    }
+
+    func load() async {
+        await fetchUser()
+
+        guard case .loaded = state else {
+            return
+        }
+
+        await fetchRepositories()
     }
 }
