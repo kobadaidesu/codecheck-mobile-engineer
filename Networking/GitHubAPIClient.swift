@@ -164,7 +164,7 @@ struct GitHubAPIClient: GitHubAPIClientProtocol {
 
         components?.queryItems = [
             URLQueryItem(name: "sort", value: "updated"),
-            URLQueryItem(name: "per_page", value: "100")
+            URLQueryItem(name: "per_page", value: "100"),
         ]
 
         guard let url = components?.url else {
@@ -189,7 +189,7 @@ struct GitHubAPIClient: GitHubAPIClientProtocol {
         }
 
         switch httpResponse.statusCode {
-        case 200..<300:
+        case 200 ..< 300:
             return try JSONDecoder().decode(
                 [Repository].self,
                 from: data

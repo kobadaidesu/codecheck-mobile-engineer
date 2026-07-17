@@ -153,7 +153,8 @@ struct UserDetailView: View {
                 .font(.headline)
 
             if let description = repository.description,
-               !description.isEmpty {
+               !description.isEmpty
+            {
                 Text(description)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)

@@ -1,3 +1,5 @@
 disabled_rules:
   # SwiftFormat owns the trailing-comma style.
   - trailing_comma
+  # SwiftFormat owns multiline opening-brace placement.
+  - opening_brace
