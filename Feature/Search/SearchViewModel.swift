@@ -7,7 +7,7 @@
 
 import Foundation
 
-/*
+/**
  0件とerrorを分けるのがミソ
  enumってのは複数選択肢のうちちょうど１つを表現するのに便利
  */
@@ -77,6 +77,7 @@ final class SearchViewModel: ObservableObject {
         }
     }
 }
+
 /*
  [idle] ──検索開始──> [loading] ──┬─ 成功・結果あり ─> [loaded]
            ↑                              ├─ 成功・0件 ─────> [empty]

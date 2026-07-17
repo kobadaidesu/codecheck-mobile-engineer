@@ -9,14 +9,14 @@ import SwiftUI
 
 struct UserDetailView: View {
     @StateObject private var viewModel: UserDetailViewModel
-    
 
     init(login: String) {
         _viewModel = StateObject(
             wrappedValue: UserDetailViewModel(login: login)
         )
     }
-    /*
+
+    /**
      Viewは隠してるけど中身は１つsome
      */
     var body: some View {
@@ -30,7 +30,7 @@ struct UserDetailView: View {
                     userContent(user)
                 }
 
-            case .error(let message):
+            case let .error(message):
                 VStack(spacing: 12) {
                     Image(systemName: "exclamationmark.triangle")
                         .font(.largeTitle)

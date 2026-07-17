@@ -7,13 +7,11 @@
 
 import Foundation
 
-import Foundation
-
 struct UserSearchResponse: Decodable {
     let items: [UserSummary]
 }
 
-//Decodable: JSON -> Swiftの方に変換できる
+// Decodable: JSON -> Swiftの方に変換できる
 struct UserSummary: Decodable, Identifiable {
     let id: Int
     let login: String
@@ -28,14 +26,13 @@ struct UserSummary: Decodable, Identifiable {
     }
 }
 
-
 /*
-{
-  "id": 1,
-  "login": "octocat",
-  "avatar_url": "https://...",
-  "html_url": "https://github.com/octocat"
-}
-CodingKeyをやらないとavatar_urlをきれいに受け取れない
- これがあるとJSONの"html_url" -> SwiftのhtmlURLという対応になる
-*/
+ {
+   "id": 1,
+   "login": "octocat",
+   "avatar_url": "https://...",
+   "html_url": "https://github.com/octocat"
+ }
+ CodingKeyをやらないとavatar_urlをきれいに受け取れない
+  これがあるとJSONの"html_url" -> SwiftのhtmlURLという対応になる
+ */

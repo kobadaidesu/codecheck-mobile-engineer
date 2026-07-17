@@ -1,0 +1,3 @@
+disabled_rules:
+  # SwiftFormat owns the trailing-comma style.
+  - trailing_comma

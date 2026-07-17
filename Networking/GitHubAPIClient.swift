@@ -12,9 +12,9 @@ protocol GitHubAPIClientProtocol {
     func fetchUser(login: String) async throws -> UserDetail
 }
 
-/*
-LocalizedErrorはユーザーに見せる日本語メッセージのために書いてる
-*/
+/**
+ LocalizedErrorはユーザーに見せる日本語メッセージのために書いてる
+ */
 enum GitHubAPIError: LocalizedError {
     case invalidURL
     case invalidResponse
@@ -24,16 +24,16 @@ enum GitHubAPIError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .invalidURL:
-            return "検索URLを作成できませんでした。"
+            "検索URLを作成できませんでした。"
 
         case .invalidResponse:
-            return "サーバーから正しい応答を受け取れませんでした。"
+            "サーバーから正しい応答を受け取れませんでした。"
 
         case .requestLimited:
-            return "GitHub APIの利用制限に達した可能性があります。しばらくしてから再度お試しください。"
+            "GitHub APIの利用制限に達した可能性があります。しばらくしてから再度お試しください。"
 
-        case .httpStatus(let statusCode):
-            return "通信に失敗しました。ステータスコード: \(statusCode)"
+        case let .httpStatus(statusCode):
+            "通信に失敗しました。ステータスコード: \(statusCode)"
         }
     }
 }
@@ -48,7 +48,7 @@ struct GitHubAPIClient: GitHubAPIClientProtocol {
         )
 
         components?.queryItems = [
-            URLQueryItem(name: "q", value: query)
+            URLQueryItem(name: "q", value: query),
         ]
 
         guard let url = components?.url else {
@@ -85,7 +85,7 @@ struct GitHubAPIClient: GitHubAPIClientProtocol {
         }
 
         switch httpResponse.statusCode {
-        case 200..<300:
+        case 200 ..< 300:
             let searchResponse = try JSONDecoder().decode(
                 UserSearchResponse.self,
                 from: data
@@ -107,9 +107,10 @@ struct GitHubAPIClient: GitHubAPIClientProtocol {
         guard let encodedLogin = login.addingPercentEncoding(
             withAllowedCharacters: .urlPathAllowed
         ),
-        let url = URL(
-            string: "https://api.github.com/users/\(encodedLogin)"
-        ) else {
+            let url = URL(
+                string: "https://api.github.com/users/\(encodedLogin)"
+            )
+        else {
             throw GitHubAPIError.invalidURL
         }
 
@@ -133,7 +134,7 @@ struct GitHubAPIClient: GitHubAPIClientProtocol {
         }
 
         switch httpResponse.statusCode {
-        case 200..<300:
+        case 200 ..< 300:
             return try JSONDecoder().decode(
                 UserDetail.self,
                 from: data
@@ -151,11 +152,11 @@ struct GitHubAPIClient: GitHubAPIClientProtocol {
 }
 
 /*
-検索文字を受け取る
-↓
-URLを作る
-↓
-GitHubへリクエストする
-↓
-JSONをSwiftのモデルへ変換する
-*/
+ 検索文字を受け取る
+ ↓
+ URLを作る
+ ↓
+ GitHubへリクエストする
+ ↓
+ JSONをSwiftのモデルへ変換する
+ */
