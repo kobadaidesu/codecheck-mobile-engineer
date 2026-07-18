@@ -9,6 +9,7 @@ import SwiftUI
 
 struct UserDetailView: View {
     @StateObject private var viewModel: UserDetailViewModel
+    @State private var safariURL: URL?
 
     init(login: String) {
         _viewModel = StateObject(
@@ -57,6 +58,20 @@ struct UserDetailView: View {
         .task {
             await viewModel.load()
         }
+        .sheet(
+            isPresented: Binding(
+                get: { safariURL != nil },
+                set: { isPresented in
+                    if !isPresented {
+                        safariURL = nil
+                    }
+                }
+            )
+        ) {
+            if let safariURL {
+                SafariView(url: safariURL)
+            }
+        }
     }
 
     private func userContent(_ user: UserDetail) -> some View {
@@ -88,6 +103,12 @@ struct UserDetailView: View {
                     statView(title: "Followers", value: user.followers)
                     statView(title: "Following", value: user.following)
                     statView(title: "Repositories", value: user.publicRepos)
+                }
+
+                Button {
+                    safariURL = user.htmlURL
+                } label: {
+                    Label("GitHubで開く", systemImage: "safari")
                 }
 
                 Divider()
@@ -139,7 +160,12 @@ struct UserDetailView: View {
         } else {
             LazyVStack(spacing: 12) {
                 ForEach(viewModel.repositories) { repository in
-                    repositoryRow(repository)
+                    Button {
+                        safariURL = repository.htmlURL
+                    } label: {
+                        repositoryRow(repository)
+                    }
+                    .buttonStyle(.plain)
                 }
             }
         }
