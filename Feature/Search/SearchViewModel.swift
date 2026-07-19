@@ -25,14 +25,19 @@ final class SearchViewModel: ObservableObject {
 
     @Published private(set) var users: [UserSummary] = []
     @Published private(set) var state: SearchViewState = .idle
+    @Published private(set) var searchHistory: [String]
 
     private let apiClient: any GitHubAPIClientProtocol
+    private let historyStore: any SearchHistoryStoreProtocol
     private var searchTask: Task<Void, Never>?
 
     init(
-        apiClient: any GitHubAPIClientProtocol = GitHubAPIClient()
+        apiClient: any GitHubAPIClientProtocol = GitHubAPIClient(),
+        historyStore: any SearchHistoryStoreProtocol = SearchHistoryStore()
     ) {
         self.apiClient = apiClient
+        self.historyStore = historyStore
+        searchHistory = historyStore.load()
     }
 
     var isLoading: Bool {
@@ -67,14 +72,33 @@ final class SearchViewModel: ObservableObject {
                 try Task.checkCancellation()
 
                 users = result
-                state = result.isEmpty ? .empty : .loaded
+
+                if result.isEmpty {
+                    state = .empty
+                } else {
+                    state = .loaded
+                    historyStore.save(query: trimmedQuery)
+                    searchHistory = historyStore.load()
+                }
             } catch is CancellationError {
                 // 新しい検索によるキャンセルなのでエラー表示しない
+            } catch let error as URLError where error.code == .cancelled {
+                // URLSession側のキャンセルなのでエラー表示しない
             } catch {
                 users = []
                 state = .error(error.localizedDescription)
             }
         }
+    }
+
+    func selectHistory(_ historyQuery: String) {
+        query = historyQuery
+        search()
+    }
+
+    func clearHistory() {
+        historyStore.clear()
+        searchHistory = []
     }
 }
 

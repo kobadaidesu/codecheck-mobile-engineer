@@ -53,11 +53,15 @@ struct SearchView: View {
     private var searchContent: some View {
         switch viewModel.state {
         case .idle:
-            messageView(
-                systemImage: "magnifyingglass",
-                title: "GitHubユーザーを検索",
-                message: "ユーザー名やキーワードを入力してください。"
-            )
+            if viewModel.searchHistory.isEmpty {
+                messageView(
+                    systemImage: "magnifyingglass",
+                    title: "GitHubユーザーを検索",
+                    message: "ユーザー名やキーワードを入力してください。"
+                )
+            } else {
+                searchHistorySection
+            }
 
         case .loading:
             ProgressView("検索中です…")
@@ -79,6 +83,51 @@ struct SearchView: View {
                 message: message
             )
         }
+    }
+
+    private var searchHistorySection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Label(
+                    "検索履歴",
+                    systemImage: "clock"
+                )
+                .font(.headline)
+
+                Spacer()
+
+                Button("すべて削除") {
+                    viewModel.clearHistory()
+                }
+                .font(.subheadline)
+            }
+
+            ForEach(
+                viewModel.searchHistory,
+                id: \.self
+            ) { historyQuery in
+                Button {
+                    viewModel.selectHistory(historyQuery)
+                } label: {
+                    HStack {
+                        Image(systemName: "clock.arrow.circlepath")
+
+                        Text(historyQuery)
+                            .foregroundStyle(.primary)
+
+                        Spacer()
+
+                        Image(systemName: "arrow.up.left")
+                            .foregroundStyle(.secondary)
+                    }
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+
+                Divider()
+            }
+        }
+        .padding()
     }
 
     private var userList: some View {
