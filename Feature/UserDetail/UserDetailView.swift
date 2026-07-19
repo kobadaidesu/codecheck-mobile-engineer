@@ -77,12 +77,25 @@ struct UserDetailView: View {
     private func userContent(_ user: UserDetail) -> some View {
         ScrollView {
             VStack(spacing: 16) {
-                AsyncImage(url: user.avatarURL) { image in
-                    image
-                        .resizable()
-                        .scaledToFill()
-                } placeholder: {
-                    ProgressView()
+                AsyncImage(url: user.avatarURL) { phase in
+                    switch phase {
+                    case .empty:
+                        ProgressView()
+
+                    case let .success(image):
+                        image
+                            .resizable()
+                            .scaledToFill()
+
+                    case .failure:
+                        Image(systemName: "person.crop.circle")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundStyle(.secondary)
+
+                    @unknown default:
+                        EmptyView()
+                    }
                 }
                 .frame(width: 120, height: 120)
                 .clipShape(Circle())
