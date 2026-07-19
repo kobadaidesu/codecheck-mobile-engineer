@@ -19,10 +19,8 @@ final class SearchHistoryStore: SearchHistoryStoreProtocol {
         self.userDefaults = userDefaults
     }
 
-    /**
-     関数はこのKeyで保持されてる文字列の配列をだして
-    stringArrayのかえりちは[String]?だから ?? で何もないとき空配列に変換してる
-     */
+    /// このキーで保存されている文字列配列を読み込みます。
+    /// `stringArray`は`[String]?`を返すため、保存値がない場合は空配列へ変換します。
     func load() -> [String] {
         userDefaults.stringArray(
             forKey: Constants.key
