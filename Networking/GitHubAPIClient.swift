@@ -56,52 +56,12 @@ struct GitHubAPIClient: GitHubAPIClientProtocol {
             throw GitHubAPIError.invalidURL
         }
 
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        /*
-         • https://docs.github.com/en/rest/using-the-rest-api/getting-started-with-the-rest-api
-            にUser-Agent必須って書いてある
-            今回だとUser-Agent: GitHubUserSearchAppッテ送られる
-            Acceptは返信の形式の希望 JSONで返して JSONDecoder().decode()で壊れるリスクがあるから形式を固定してる
-         */
-        request.setValue(
-            "application/vnd.github+json",
-            forHTTPHeaderField: "Accept"
-        )
-        request.setValue(
-            "GitHubUserSearchApp",
-            forHTTPHeaderField: "User-Agent"
-        )
-        /*
-         URLSessionの仕様で２つの返り値がくる
-         dataに中身の本文(body)が入る, responseはstatus codeやheader などがいろいろはいってる
-         URLResponseという汎用的な型
-         */
-        let (data, response) = try await URLSession.shared.data(
-            for: request
+        let searchResponse = try await fetch(
+            UserSearchResponse.self,
+            from: url
         )
 
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw GitHubAPIError.invalidResponse
-        }
-
-        switch httpResponse.statusCode {
-        case 200 ..< 300:
-            let searchResponse = try JSONDecoder().decode(
-                UserSearchResponse.self,
-                from: data
-            )
-
-            return searchResponse.items
-
-        case 403, 429:
-            throw GitHubAPIError.requestLimited
-
-        default:
-            throw GitHubAPIError.httpStatus(
-                httpResponse.statusCode
-            )
-        }
+        return searchResponse.items
     }
 
     func fetchUser(login: String) async throws -> UserDetail {
@@ -115,40 +75,7 @@ struct GitHubAPIClient: GitHubAPIClientProtocol {
             throw GitHubAPIError.invalidURL
         }
 
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.setValue(
-            "application/vnd.github+json",
-            forHTTPHeaderField: "Accept"
-        )
-        request.setValue(
-            "GitHubUserSearchApp",
-            forHTTPHeaderField: "User-Agent"
-        )
-
-        let (data, response) = try await URLSession.shared.data(
-            for: request
-        )
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw GitHubAPIError.invalidResponse
-        }
-
-        switch httpResponse.statusCode {
-        case 200 ..< 300:
-            return try JSONDecoder().decode(
-                UserDetail.self,
-                from: data
-            )
-
-        case 403, 429:
-            throw GitHubAPIError.requestLimited
-
-        default:
-            throw GitHubAPIError.httpStatus(
-                httpResponse.statusCode
-            )
-        }
+        return try await fetch(UserDetail.self, from: url)
     }
 
     func fetchRepositories(login: String) async throws -> [Repository] {
@@ -171,8 +98,21 @@ struct GitHubAPIClient: GitHubAPIClientProtocol {
             throw GitHubAPIError.invalidURL
         }
 
+        return try await fetch([Repository].self, from: url)
+    }
+
+    private func fetch<T: Decodable>(
+        _ type: T.Type,
+        from url: URL
+    ) async throws -> T {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
+        /*
+         • https://docs.github.com/en/rest/using-the-rest-api/getting-started-with-the-rest-api
+            にUser-Agent必須って書いてある
+            今回だとUser-Agent: GitHubUserSearchAppッテ送られる
+            Acceptは返信の形式の希望 JSONで返して JSONDecoder().decode()で壊れるリスクがあるから形式を固定してる
+         */
         request.setValue(
             "application/vnd.github+json",
             forHTTPHeaderField: "Accept"
@@ -182,7 +122,14 @@ struct GitHubAPIClient: GitHubAPIClientProtocol {
             forHTTPHeaderField: "User-Agent"
         )
 
-        let (data, response) = try await URLSession.shared.data(for: request)
+        /*
+         URLSessionの仕様で２つの返り値がくる
+         dataに中身の本文(body)が入る, responseはstatus codeやheader などがいろいろはいってる
+         URLResponseという汎用的な型
+         */
+        let (data, response) = try await URLSession.shared.data(
+            for: request
+        )
 
         guard let httpResponse = response as? HTTPURLResponse else {
             throw GitHubAPIError.invalidResponse
@@ -191,7 +138,7 @@ struct GitHubAPIClient: GitHubAPIClientProtocol {
         switch httpResponse.statusCode {
         case 200 ..< 300:
             return try JSONDecoder().decode(
-                [Repository].self,
+                type,
                 from: data
             )
 
